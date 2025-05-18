@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { use, useEffect } from "react";
 import { Header } from "../Header/Header";
 import { ScrollArea } from "@/components/ui/scroll-area";
 // import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -12,6 +12,13 @@ import RichInput from "./RichInput";
 export const ChatBlock = () => {
   const { messages, setMessages, currentChat, handleTyping, handleTypingEnd } = useRtcContext();
   const userIndexRef = React.useRef({});
+  const lastMessageRef = React.useRef(null);
+
+  useEffect(() => {
+    if (lastMessageRef.current) {
+      lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages.length]);
 
   const typingText = React.useMemo(() => {
     const typingUser = currentChat.users.find((user) => user.typing);
@@ -89,10 +96,11 @@ export const ChatBlock = () => {
                     <p className="text-sm text-gray-600">No messages yet</p>
                   </div>
                 )}
-                {messages.map((message) => {
+                {messages.map((message, index) => {
                   return (
                     <li
                       key={message.id}
+                      ref={index === messages.length - 1 ? lastMessageRef : null}
                       className={`text-sm font-medium DMSans max-w-4/6 bg-white border border-solid border-gray-200 p-2 px-3 rounded-2xl ${
                         message.sender === currentUser.userId ? "rounded-br-xs ml-auto" : "rounded-bl-xs mr-auto"
                       } w-fit`}

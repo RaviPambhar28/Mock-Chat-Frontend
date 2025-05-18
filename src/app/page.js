@@ -21,7 +21,6 @@ export default function Home() {
     const getMesssage = async () => {
       if (currentChat.groupId) {
         const messages = await getMessagesByGroup(currentChat.groupId);
-        console.log(messages);
         setMessages(messages);
       }
     };
@@ -39,8 +38,6 @@ export default function Home() {
     if (!user) return;
     setCurrentChat((prev) => ({ ...prev, users: prev.users.map((u) => (u.userId === userId ? { ...u, typing: false } : u)) }));
   };
-
-  console.log("Current chat:", currentChat);
 
   return (
     <RtcContext.Provider value={{ currentChat, setCurrentChat, messages, setMessages, handleTyping, handleTypingEnd }}>
