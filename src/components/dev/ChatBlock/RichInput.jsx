@@ -34,6 +34,7 @@ function RichInput({ onInputSubmit, users }) {
       className="flex items-center gap-3 w-full relative"
       onSubmit={(e) => {
         e.preventDefault();
+        if (input.trim() === "") return;
         onInputSubmit(input);
         setInput("");
       }}
