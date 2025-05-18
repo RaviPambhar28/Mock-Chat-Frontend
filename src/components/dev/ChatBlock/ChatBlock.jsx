@@ -89,8 +89,8 @@ export const ChatBlock = () => {
           <ChatSideBar />
           <div className="w-2/4 h-full grow flex flex-col">
             <ChatHead />
-            <ScrollArea className="h-[calc(100dvh_-_224px)] w-full p-4">
-              <ul className="flex flex-col gap-2">
+            <ScrollArea className="h-[calc(100dvh_-_220px)] w-full p-4 [&>div]:max-w-full [&>div>div]:max-w-full [&>div>div]:block">
+              <ul className="flex flex-col gap-2 max-w-full">
                 {messages.length === 0 && (
                   <div className="flex items-center justify-center h-full">
                     <p className="text-sm text-gray-600">No messages yet</p>
@@ -101,21 +101,21 @@ export const ChatBlock = () => {
                     <li
                       key={message.id}
                       ref={index === messages.length - 1 ? lastMessageRef : null}
-                      className={`text-sm font-medium DMSans max-w-4/6 bg-white border border-solid border-gray-200 p-2 px-3 rounded-2xl ${
-                        message.sender === currentUser.userId ? "rounded-br-xs ml-auto" : "rounded-bl-xs mr-auto"
-                      } w-fit`}
+                      className={`max-w-4/6 ${message.sender === currentUser.userId ? "ml-auto" : "mr-auto"} w-fit`}
                     >
                       {message.sender !== currentUser.userId && (
-                        <span className="text-xs text-gray-600">{userIndexRef.current?.[message.sender].name}</span>
+                        <span className="text-xs text-[#5956FC] font-medium">{userIndexRef.current?.[message.sender].name}</span>
                       )}
-                      {message.content}
+                      <span className={`block text-sm font-medium DMSans bg-white border border-solid border-gray-200 p-2 px-3 rounded-2xl ${message.sender === currentUser.userId ? "rounded-br-xs" : "rounded-bl-xs"} w-fit`}>
+                        {message.content}
+                      </span>
                     </li>
                   );
                 })}
               </ul>
             </ScrollArea>
-            {typingText ? <span> {typingText}</span> : null}
-            <div className="flex items-center gap-3 border-t border-solid border-gray-200 py-2 px-4 cursor-pointer">
+            {typingText ? <span className="text-gray-500 text-xs p-3"> {typingText}</span> : null}
+            <div className="flex items-center gap-3 border-t border-solid border-gray-200 py-2 px-4 cursor-pointer shrink-0">
               <RichInput onInputSubmit={onInputSubmit} users={currentChat.users} />
             </div>
           </div>

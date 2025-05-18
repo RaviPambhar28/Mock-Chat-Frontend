@@ -14,7 +14,7 @@ function ChatSideBar() {
 
   return (
     <div className="w-1/4 h-full border-r border-solid border-gray-200">
-      <ScrollArea className="h-[calc(100dvh_-_105px)] w-full p-4">
+      <ScrollArea className="h-[calc(100dvh_-_105px)] w-full p-4 [&>div]:max-w-full [&>div>div]:max-w-full [&>div>div]:!block">
         <ul className="flex flex-col gap-2.5">
           {mockChatDetails.map((group) => {
             return (
@@ -28,7 +28,7 @@ function ChatSideBar() {
               >
                 <div className="size-10 relative rounded-full border border-solid border-gray-200">
                   <img src={group.avatar} className="size-full rounded-full object-cover" alt="profile img" />
-                  <span className="bottom-0 right-0 absolute  w-3.5 h-3.5 bg-green-400 border-2 border-white dark:border-gray-800 rounded-full"></span>
+                  <span className="bottom-0 -right-1 absolute w-3 h-3 bg-green-400 border-2 border-white dark:border-gray-800 rounded-full"></span>
                 </div>
                 <div className="w-2/4 grow block">
                   <h4 className="font-semibold text-base DMSans whitespace-nowrap max-w-full overflow-hidden text-ellipsis">

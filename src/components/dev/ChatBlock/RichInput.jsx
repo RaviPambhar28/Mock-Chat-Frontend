@@ -31,7 +31,7 @@ function RichInput({ onInputSubmit, users }) {
 
   return (
     <form
-      className="flex items-center gap-3 w-2/4 grow relative"
+      className="flex items-center gap-3 w-full relative"
       onSubmit={(e) => {
         e.preventDefault();
         onInputSubmit(input);
@@ -56,11 +56,10 @@ function RichInput({ onInputSubmit, users }) {
         placeholder="Message"
         value={input}
         onChange={handleChange}
-        className="w-2/4 grow rounded-full py-3 px-5 bg-white shadow-md border border-gray-200 focus:ring-2 focus:ring-blue-200 transition-all"
-        style={{ minHeight: "44px" }}
+        className="w-2/4 grow rounded-full py-2 px-4 bg-white shadow-md border border-gray-200 focus:ring-2 focus:ring-blue-200 transition-all"
       />
       <Button
-        className="rounded-full size-10 p-1.5 shadow-md bg-blue-600 hover:bg-blue-700 text-white transition-colors"
+        className="rounded-full size-9 p-1.5 shadow-md bg-[#5956FC] hover:bg-[#5956FC] text-white transition-colors cursor-pointer"
         type="submit"
       >
         <svg

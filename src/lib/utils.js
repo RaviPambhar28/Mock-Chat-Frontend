@@ -9,7 +9,7 @@ export const mockChatDetails = [
   {
     groupId: 1,
     groupName: "Avengers",
-    avatar: "/images/avengers.jpeg",
+    avatar: "/images/avatar1.webp",
     quote: "This group chat is 10% plans, 90% chaos—and I wouldn’t have it any other way",
     users: [
       { userId: 1, name: "Ravi", avatar: "", typing: false },
@@ -25,7 +25,7 @@ export const mockChatDetails = [
   {
     groupId: 2,
     groupName: "Justice League",
-    avatar: "/images/jsluege.jpg",
+    avatar: "/images/avatar2.webp",
     quote: "We may not always make sense, but at least we’re all confused together.",
     users: [
       { userId: 1, name: "Ravi", avatar: "", typing: false },
@@ -38,7 +38,7 @@ export const mockChatDetails = [
   {
     groupId: 3,
     groupName: "Techies",
-    avatar: "/images/jsluege.jpg",
+    avatar: "/images/avatar3.webp",
     quote: "Proof that one brain cell can be shared by many.",
     users: [
       { userId: 1, name: "Ravi", avatar: "", typing: false },

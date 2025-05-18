@@ -14,7 +14,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${dmSans.variable} antialiased h-screen h-full`}>
+      <body className={`${dmSans.variable} antialiased h-screen bg-[#F5F5F6]`}>
         {children}
       </body>
     </html>
