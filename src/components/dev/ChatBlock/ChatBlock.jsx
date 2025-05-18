@@ -13,6 +13,12 @@ export const ChatBlock = () => {
   const { messages, setMessages, currentChat, handleTyping, handleTypingEnd } = useRtcContext();
   const userIndexRef = React.useRef({});
 
+  const typingText = React.useMemo(() => {
+    const typingUser = currentChat.users.find((user) => user.typing);
+    if (!typingUser) return null;
+    return `${typingUser.name} is typing...`;
+  }, [currentChat]);
+
   useEffect(() => {
     const userIndex = {};
     currentChat.users.forEach((user) => {
@@ -40,9 +46,7 @@ export const ChatBlock = () => {
   const onInputSubmit = async (value) => {
     handleSendMessage(value, currentUser.userId);
     const otherUsers = currentChat.users.filter((u) => u.userId !== currentUser.userId);
-    console.log("Other users:", otherUsers);
     const nextUserId = await getNextMessageUserId(otherUsers, messages, value);
-    console.log("Next user ID:", nextUserId);
     if (nextUserId) {
       const randomTimeout = Math.floor(Math.random() * 5 + 1) * 1000;
       handleTyping(nextUserId);
@@ -102,6 +106,7 @@ export const ChatBlock = () => {
                 })}
               </ul>
             </ScrollArea>
+            {typingText ? <span> {typingText}</span> : null}
             <div className="flex items-center gap-3 border-t border-solid border-gray-200 py-2 px-4 cursor-pointer">
               <RichInput onInputSubmit={onInputSubmit} users={currentChat.users} />
             </div>
