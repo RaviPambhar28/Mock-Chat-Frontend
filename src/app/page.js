@@ -28,8 +28,22 @@ export default function Home() {
     getMesssage();
   }, [currentChat.groupId]);
 
+  const handleTyping = (userId) => {
+    const user = currentChat.users.find((user) => user.userId === userId);
+    if (!user) return;
+    setCurrentChat((prev) => ({ ...prev, users: prev.users.map((u) => (u.userId === userId ? { ...u, typing: true } : u)) }));
+  };
+
+  const handleTypingEnd = (userId) => {
+    const user = currentChat.users.find((user) => user.userId === userId);
+    if (!user) return;
+    setCurrentChat((prev) => ({ ...prev, users: prev.users.map((u) => (u.userId === userId ? { ...u, typing: false } : u)) }));
+  };
+
+  console.log("Current chat:", currentChat);
+
   return (
-    <RtcContext.Provider value={{ currentChat, setCurrentChat, messages, setMessages }}>
+    <RtcContext.Provider value={{ currentChat, setCurrentChat, messages, setMessages, handleTyping, handleTypingEnd }}>
       <ChatBlock />
     </RtcContext.Provider>
   );

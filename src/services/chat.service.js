@@ -55,3 +55,37 @@ export function openChatDB() {
     request.onerror = () => reject(request.error);
   });
 }
+
+export async function getNextMessageUserId(users, messages, message) {
+  const response = await fetch("/api/replyuser", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ users, message, messages }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch userId");
+  }
+
+  const data = await response.json();
+  return data.userId;
+}
+
+export async function getAnswer(users, messages, message) {
+  const response = await fetch("/api/reply", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ users, messages, message }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch answer");
+  }
+
+  const data = await response.json();
+  return data.answer;
+}

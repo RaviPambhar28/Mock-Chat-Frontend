@@ -1,18 +1,25 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Header } from "../Header/Header";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Button } from "@/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Input } from "@/components/ui/input";
+// import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ChatHead } from "./ChatHead/ChatHead";
 import ChatSideBar from "../ChatSidebar";
 import { useRtcContext } from "@/app/page";
-import { saveMessage } from "@/services/chat.service";
+import { getAnswer, getNextMessageUserId, saveMessage } from "@/services/chat.service";
 import { currentUser } from "@/lib/utils";
+import RichInput from "./RichInput";
 
 export const ChatBlock = () => {
-  const { messages, setMessages, currentChat } = useRtcContext();
-  const [inputValue, setInputValue] = React.useState("");
+  const { messages, setMessages, currentChat, handleTyping, handleTypingEnd } = useRtcContext();
+  const userIndexRef = React.useRef({});
+
+  useEffect(() => {
+    const userIndex = {};
+    currentChat.users.forEach((user) => {
+      userIndex[user.userId] = user;
+    });
+    userIndexRef.current = userIndex;
+  }, [currentChat.groupId]);
 
   const handleSendMessage = async (message, user_id) => {
     const chat_id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -30,11 +37,37 @@ export const ChatBlock = () => {
     ]);
   };
 
-  const onInputSubmit = (e) => {
-    e.preventDefault();
-    if (inputValue.trim() === "") return;
-    handleSendMessage(inputValue, currentUser.userId);
-    setInputValue("");
+  const onInputSubmit = async (value) => {
+    handleSendMessage(value, currentUser.userId);
+    const otherUsers = currentChat.users.filter((u) => u.userId !== currentUser.userId);
+    console.log("Other users:", otherUsers);
+    const nextUserId = await getNextMessageUserId(otherUsers, messages, value);
+    console.log("Next user ID:", nextUserId);
+    if (nextUserId) {
+      const randomTimeout = Math.floor(Math.random() * 5 + 1) * 1000;
+      handleTyping(nextUserId);
+      setTimeout(() => {
+        ansToUserId(value, nextUserId);
+      }, randomTimeout);
+    } else {
+      const randomTimeout = Math.floor(Math.random() * 5 + 1) * 1000;
+      const randomUser = otherUsers[Math.floor(Math.random() * otherUsers.length)];
+      setTimeout(() => {
+        const randomTimeout2 = Math.floor(Math.random() * 5 + 1) * 1000;
+        handleTyping(randomUser.userId);
+        setTimeout(() => {
+          ansToUserId(value, randomUser.userId);
+        }, randomTimeout2);
+      }, randomTimeout);
+    }
+  };
+
+  const ansToUserId = async (message, userId) => {
+    const answer = await getAnswer(currentChat.users, messages, message);
+    if (answer) {
+      handleSendMessage(answer, userId);
+    }
+    handleTypingEnd(userId);
   };
 
   return (
@@ -60,6 +93,9 @@ export const ChatBlock = () => {
                         message.sender === currentUser.userId ? "rounded-br-xs ml-auto" : "rounded-bl-xs mr-auto"
                       } w-fit`}
                     >
+                      {message.sender !== currentUser.userId && (
+                        <span className="text-xs text-gray-600">{userIndexRef.current?.[message.sender].name}</span>
+                      )}
                       {message.content}
                     </li>
                   );
@@ -67,68 +103,7 @@ export const ChatBlock = () => {
               </ul>
             </ScrollArea>
             <div className="flex items-center gap-3 border-t border-solid border-gray-200 py-2 px-4 cursor-pointer">
-              <Popover>
-                <PopoverTrigger>
-                  <Button className={"rounded-full size-10 p-1.5"}>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="currentColor"
-                      className="size-5"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                    </svg>
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent align="start" className={"w-36 p-0 overflow-hidden"}>
-                  <ul>
-                    <li className="flex items-center gap-3 cursor-pointe p-3 relative bg-white hover:bg-gray-50 transition duration-150 ease-in">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth={1.5}
-                        stroke="currentColor"
-                        className="size-6"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
-                        />
-                      </svg>
-                      <span className="text-sm">File</span>
-                      <input type="file" className="absolute top-0 left-0 opacity-0 z-10 w-full h-full" name="" id="" />
-                    </li>
-                  </ul>
-                </PopoverContent>
-              </Popover>
-              <form className="flex items-center gap-3 w-2/4 grow" onSubmit={onInputSubmit}>
-                <Input
-                  placeholder="Message"
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  className={"w-2/4 grow rounded-full py-2.5"}
-                />
-                <Button className={"rounded-full size-10 p-1.5"} type="submit">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="size-5"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"
-                    />
-                  </svg>
-                </Button>
-              </form>
+              <RichInput onInputSubmit={onInputSubmit} users={currentChat.users} />
             </div>
           </div>
         </div>

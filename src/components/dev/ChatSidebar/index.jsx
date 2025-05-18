@@ -6,6 +6,12 @@ import { useRtcContext } from "@/app/page";
 function ChatSideBar() {
   const { currentChat, setCurrentChat } = useRtcContext();
 
+  const typingText = React.useMemo(() => {
+    const typingUser = currentChat.users.find((user) => user.typing);
+    if (!typingUser) return null;
+    return `${typingUser.name} is typing...`;
+  }, [currentChat]);
+
   return (
     <div className="w-1/4 h-full border-r border-solid border-gray-200">
       <ScrollArea className="h-[calc(100dvh_-_105px)] w-full p-4">
@@ -17,7 +23,7 @@ function ChatSideBar() {
                 onClick={() => setCurrentChat(group)}
                 className={cn(
                   "flex items-center gap-2.5 border border-solid border-transparent hover:border-gray-100 hover:bg-gray-50 cursor-pointer p-1 rounded-xl max-w-full overflow-ellipsis",
-                  currentChat.groupName === group.groupName ? "border-gray-200 bg-gray-50" : ""
+                  currentChat.groupId === group.groupId ? "border-gray-200 bg-gray-50" : ""
                 )}
               >
                 <div className="size-10 relative rounded-full border border-solid border-gray-200">
@@ -29,7 +35,7 @@ function ChatSideBar() {
                     {group.groupName}
                   </h4>
                   <p className="text-sm text-gray-600 whitespace-nowrap max-w-full w-full overflow-hidden text-ellipsis block DMSans">
-                    {group.quote}
+                    {typingText && currentChat.groupId === group.groupId ? typingText : group.quote}
                   </p>
                 </div>
               </li>
